@@ -19,7 +19,7 @@ export class ShoppingListsService {
     @InjectRepository(ShoppingLists)
     private shoppingListRepository: Repository<ShoppingLists>,
     @InjectRepository(ShoppingListsItemsEntity)
-    private shoppingCartItemsRepository: Repository<ShoppingListsItemsEntity>,
+    private shoppingListsItemsRepository: Repository<ShoppingListsItemsEntity>,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     @InjectRepository(Products)
@@ -28,38 +28,38 @@ export class ShoppingListsService {
 
   async getAll(): Promise<any> {
     const result = await this.shoppingListRepository
-      .createQueryBuilder('shoppCart')
+      .createQueryBuilder('shoppList')
       .select([
-        'shoppCart.id',
-        'shoppCart.name',
-        `shoppCart.updated_at`,
+        'shoppList.id',
+        'shoppList.name',
+        `shoppList.updated_at`,
         'user.id',
         'user.name',
-        'shoppingCartsItems.id',
+        'shoppListsItems.id',
         'product.id',
         'product.name',
         'product.image',
       ])
-      .leftJoin('shoppCart.user', 'user')
-      .leftJoin('shoppCart.shoppingCartsItems', 'shoppingCartsItems')
-      .leftJoin('shoppingCartsItems.product', 'product')
+      .leftJoin('shoppList.user', 'user')
+      .leftJoin('shoppList.shoppListsItems', 'shoppListsItems')
+      .leftJoin('shoppListsItems.product', 'product')
       // .addSelect('COUNT(*) as quantity')
       // .addGroupBy('product.id')
       .getMany();
     return result;
   }
 
-  async getItems(shoppingCartId: number) {
-    const result = await this.shoppingCartItemsRepository
-      .createQueryBuilder('shoppingCartItems')
+  async getItems(shoppListId: number) {
+    const result = await this.shoppingListsItemsRepository
+      .createQueryBuilder('shoppListItems')
       .select([
-        'shoppingCartItems',
+        'shoppListItems',
         'product.id',
         'product.name',
         'product.image',
       ])
-      .where(`shoppingCartItems.shoppingCartId = ${shoppingCartId}`)
-      .leftJoin('shoppingCartItems.product', 'product')
+      .where(`shoppListItems.shoppListId = ${shoppListId}`)
+      .leftJoin('shoppListItems.product', 'product')
       .getMany();
 
     if (!result || result.length <= 0) throw new NotFoundException();
@@ -76,9 +76,9 @@ export class ShoppingListsService {
     return result;
   }
 
-  async create(shoppingCarts: Partial<ShoppingListsDTO>) {
+  async create(shoppingListsDTO: Partial<ShoppingListsDTO>) {
     const user = await this.userRepository.findOne({
-      where: { id: shoppingCarts.user_id },
+      where: { id: shoppingListsDTO.user_id },
     });
 
     if (!user) {
@@ -88,41 +88,43 @@ export class ShoppingListsService {
       );
     }
 
-    const shoppingCart = this.shoppingListRepository.create({
-      ...shoppingCarts,
+    const shoppingList = this.shoppingListRepository.create({
+      ...shoppingListsDTO,
       user,
     });
 
-    await this.shoppingListRepository.save(shoppingCart);
+    await this.shoppingListRepository.save(shoppingList);
   }
 
-  async addItemToCart(data: ShoppingListsItemsDTO) {
-    // const user = new this.create(data);
+  async addItemToList(data: ShoppingListsItemsDTO) {
     const product = await this.productRepository.findOne({
       where: { id: data.productId },
     });
 
-    const shoppingCart = await this.shoppingListRepository.findOne({
-      where: { id: data.shoppingCartId },
+    const shoppingList = await this.shoppingListRepository.findOne({
+      where: { id: data.shoppingListId },
     });
 
-    const shoppingCartItem = await this.shoppingCartItemsRepository.findOne({
-      where: { product: data.productId, shoppingCart: data.shoppingCartId },
+    const shoppingListItem = await this.shoppingListsItemsRepository.findOne({
+      where: {
+        product: data.productId,
+        shoppingList: data.shoppingListId
+      },
     });
 
-    return await this.shoppingCartItemsRepository.save({
-      id: null || shoppingCartItem?.id,
+    return await this.shoppingListsItemsRepository.save({
+      id: null || shoppingListItem?.id,
       product,
-      shoppingCart,
+      shoppingList,
       quantity: data.quantity,
     });
   }
 
-  async update(shoppingCarts: Partial<ShoppingListsDTO>) {
-    await this.shoppingListRepository.save(shoppingCarts);
+  async update(shoppingListsDTO: Partial<ShoppingListsDTO>) {
+    await this.shoppingListRepository.save(shoppingListsDTO);
   }
 
-  async delete(shoppingCarts: ShoppingLists) {
-    await this.shoppingListRepository.delete(shoppingCarts);
+  async delete(shoppingLists: ShoppingLists) {
+    await this.shoppingListRepository.delete(shoppingLists);
   }
 }

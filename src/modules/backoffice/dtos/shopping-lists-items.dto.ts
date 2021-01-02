@@ -1,5 +1,5 @@
 export class ShoppingListsItemsDTO {
   productId: number;
-  shoppingCartId: number;
+  shoppingListId: number;
   quantity: number;
 }

@@ -17,7 +17,7 @@ export class UsersService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     @InjectRepository(ShoppingLists)
-    private shoppingCartRepository: Repository<ShoppingLists>
+    private shoppingListRepository: Repository<ShoppingLists>
   ) { }
 
   async getAll(): Promise<UserEntity[]> {
@@ -44,14 +44,14 @@ export class UsersService {
       throw new HttpException('Usuario não encontrado', HttpStatus.NOT_FOUND);
     }
 
-    const shoppingCarts = await this.shoppingCartRepository.find({
+    const shoppingLists = await this.shoppingListRepository.find({
       where: [{ user }],
       select: ['id', 'name']
     })
 
-    console.log(shoppingCarts);
+    console.log(shoppingLists);
 
-    return { user, shoppingCarts };
+    return { user, shoppingLists };
   }
 
   async create(userDTO: Partial<UserDTO>) {

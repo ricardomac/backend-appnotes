@@ -19,9 +19,4 @@ export class UserEntity extends GenericEntity {
   })
   password: string;
 
-  // @OneToMany(() => ShoppingCarts, (account) => account.user)
-  // shopping_lists: ShoppingCarts;
-
-  // @OneToMany(() => Products, (product) => product.user)
-  // products: Products;
 }

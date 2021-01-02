@@ -11,18 +11,12 @@ import { ShoppingLists } from '../models/shopping-lists.entity';
 export class ShoppingListsItemsService {
   constructor(
     @InjectRepository(ShoppingListsItemsEntity)
-    private shoppingCartItemsRepository: Repository<ShoppingListsItemsEntity>,
-  ) {}
-
-  // async addItemToCart(shoppingCartsItemsDTO: Partial<ShoppingCartsItemsDTO>) {
-  //   const user = this.shoppingCartItemsRepository.create(shoppingCartsItemsDTO);
-  //   await this.shoppingCartItemsRepository.save(user);
-  //   return user;
-  // }
+    private shoppingListsItemsEntityRepository: Repository<ShoppingListsItemsEntity>,
+  ) { }
 
   async getAll(): Promise<ShoppingListsItemsEntity[]> {
-    return await this.shoppingCartItemsRepository.find({
-      relations: ['product', 'shoppingCart'],
+    return await this.shoppingListsItemsEntityRepository.find({
+      relations: ['product', 'shoppingList'],
     });
   }
 }

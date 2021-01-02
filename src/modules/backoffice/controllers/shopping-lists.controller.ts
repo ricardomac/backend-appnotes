@@ -22,7 +22,7 @@ export class ShoppingListsController {
     return this.service.getAll();
   }
 
-  @Get('cart-items/:id')
+  @Get('items/:id')
   async getItems(@Param('id') id: number) {
     return await this.service.getItems(id);
   }
@@ -33,18 +33,18 @@ export class ShoppingListsController {
   }
 
   @Post()
-  create(@Body() shoppingCarts: ShoppingListsDTO) {
-    return this.service.create(shoppingCarts);
+  create(@Body() shoppingListsDTO: ShoppingListsDTO) {
+    return this.service.create(shoppingListsDTO);
   }
 
   @Post('add-item')
-  async addItemToCart(@Body() shoppingCartsItemsDTO: ShoppingListsItemsDTO) {
-    return await this.service.addItemToCart(shoppingCartsItemsDTO);
+  async addItemToList(@Body() shoppingListsItemsDTO: ShoppingListsItemsDTO) {
+    return await this.service.addItemToList(shoppingListsItemsDTO);
   }
 
   @Put()
-  update(@Body() shoppingCarts: ShoppingListsDTO) {
-    return this.service.update(shoppingCarts);
+  update(@Body() shoppingListsDTO: ShoppingListsDTO) {
+    return this.service.update(shoppingListsDTO);
   }
 
   @Delete(':id')
