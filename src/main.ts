@@ -10,6 +10,7 @@ async function bootstrap() {
     .setDescription('API com recursos do App Notes')
     .setVersion('1.0')
     .build();
+
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
 
