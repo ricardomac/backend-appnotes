@@ -8,14 +8,14 @@ import {
   Param,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ShoppingCartsItemsDTO } from '../dtos/shopping-carts-items.dto';
-import { ShoppingCartsDTO } from '../dtos/shopping-carts.dto';
-import { ShoppingCartsService } from '../services/shopping-carts.service';
+import { ShoppingListsItemsDTO } from '../dtos/shopping-lists-items.dto';
+import { ShoppingListsDTO } from '../dtos/shopping-lists.dto';
+import { ShoppingListsService } from '../services/shopping-lists.service';
 
-@ApiTags('ShoppingCarts')
-@Controller('api/shopping-carts')
-export class ShoppingCartsController {
-  constructor(private service: ShoppingCartsService) {}
+@ApiTags('ShoppingLists')
+@Controller('api/shopping-lists')
+export class ShoppingListsController {
+  constructor(private service: ShoppingListsService) {}
 
   @Get()
   getAll() {
@@ -33,17 +33,17 @@ export class ShoppingCartsController {
   }
 
   @Post()
-  create(@Body() shoppingCarts: ShoppingCartsDTO) {
+  create(@Body() shoppingCarts: ShoppingListsDTO) {
     return this.service.create(shoppingCarts);
   }
 
   @Post('add-item')
-  async addItemToCart(@Body() shoppingCartsItemsDTO: ShoppingCartsItemsDTO) {
+  async addItemToCart(@Body() shoppingCartsItemsDTO: ShoppingListsItemsDTO) {
     return await this.service.addItemToCart(shoppingCartsItemsDTO);
   }
 
   @Put()
-  update(@Body() shoppingCarts: ShoppingCartsDTO) {
+  update(@Body() shoppingCarts: ShoppingListsDTO) {
     return this.service.update(shoppingCarts);
   }
 

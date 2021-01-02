@@ -1,4 +1,3 @@
-import { ShoppingCarts } from 'src/modules/backoffice/models/shopping-carts.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { GenericEntity } from './generic.entity';
 
@@ -21,7 +20,7 @@ export class UserEntity extends GenericEntity {
   password: string;
 
   // @OneToMany(() => ShoppingCarts, (account) => account.user)
-  // shopping_carts: ShoppingCarts;
+  // shopping_lists: ShoppingCarts;
 
   // @OneToMany(() => Products, (product) => product.user)
   // products: Products;

@@ -1,5 +1,4 @@
 import { Products } from 'src/modules/backoffice/models/products.entity';
-import { ShoppingCarts } from 'src/modules/backoffice/models/shopping-carts.entity';
 import {
   Column,
   Entity,
@@ -8,11 +7,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { GenericEntity } from './generic.entity';
+import { ShoppingLists } from './shopping-lists.entity';
 
 @Entity({
-  name: 'shopping_carts_items',
+  name: 'shopping_lists_items',
 })
-export class ShoppingCartsItemsEntity extends GenericEntity {
+export class ShoppingListsItemsEntity extends GenericEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,7 +23,7 @@ export class ShoppingCartsItemsEntity extends GenericEntity {
   @JoinColumn({ name: 'productId' })
   product: Products;
 
-  @ManyToOne(() => ShoppingCarts, (type) => type.shoppingCartsItems)
-  @JoinColumn({ name: 'shoppingCartId' })
-  shoppingCart: ShoppingCarts;
+  @ManyToOne(() => ShoppingLists, (type) => type.shoppingListsItems)
+  @JoinColumn({ name: 'shoppingListId' })
+  shoppingList: ShoppingLists;
 }

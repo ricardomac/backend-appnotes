@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ShoppingCartsItemsDTO } from '../dtos/shopping-carts-items.dto';
-import { ShoppingCartsDTO } from '../dtos/shopping-carts.dto';
+import { ShoppingListsItemsDTO } from '../dtos/shopping-lists-items.dto';
+import { ShoppingListsDTO } from '../dtos/shopping-lists.dto';
 import { Products } from '../models/products.entity';
-import { ShoppingCartsItemsEntity } from '../models/shopping-carts-items.entity';
-import { ShoppingCarts } from '../models/shopping-carts.entity';
+import { ShoppingListsItemsEntity } from '../models/shopping-lists-items.entity';
+import { ShoppingLists } from '../models/shopping-lists.entity';
 
 @Injectable()
-export class ShoppingCartsItemsService {
+export class ShoppingListsItemsService {
   constructor(
-    @InjectRepository(ShoppingCartsItemsEntity)
-    private shoppingCartItemsRepository: Repository<ShoppingCartsItemsEntity>,
+    @InjectRepository(ShoppingListsItemsEntity)
+    private shoppingCartItemsRepository: Repository<ShoppingListsItemsEntity>,
   ) {}
 
   // async addItemToCart(shoppingCartsItemsDTO: Partial<ShoppingCartsItemsDTO>) {
@@ -20,7 +20,7 @@ export class ShoppingCartsItemsService {
   //   return user;
   // }
 
-  async getAll(): Promise<ShoppingCartsItemsEntity[]> {
+  async getAll(): Promise<ShoppingListsItemsEntity[]> {
     return await this.shoppingCartItemsRepository.find({
       relations: ['product', 'shoppingCart'],
     });

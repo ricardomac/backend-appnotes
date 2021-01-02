@@ -5,30 +5,29 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CONNREFUSED } from 'dns';
-import { ShoppingCartsDTO } from 'src/modules/backoffice/dtos/shopping-carts.dto';
+import { ShoppingListsDTO } from 'src/modules/backoffice/dtos/shopping-lists.dto';
 import { UserEntity } from 'src/modules/backoffice/models/user.entity';
 import { Repository } from 'typeorm';
-import { ShoppingCartsItemsDTO } from '../dtos/shopping-carts-items.dto';
+import { ShoppingListsItemsDTO } from '../dtos/shopping-lists-items.dto';
 import { Products } from '../models/products.entity';
-import { ShoppingCartsItemsEntity } from '../models/shopping-carts-items.entity';
-import { ShoppingCarts } from '../models/shopping-carts.entity';
+import { ShoppingListsItemsEntity } from '../models/shopping-lists-items.entity';
+import { ShoppingLists } from '../models/shopping-lists.entity';
 
 @Injectable()
-export class ShoppingCartsService {
+export class ShoppingListsService {
   constructor(
-    @InjectRepository(ShoppingCarts)
-    private shoppingCartRepository: Repository<ShoppingCarts>,
-    @InjectRepository(ShoppingCartsItemsEntity)
-    private shoppingCartItemsRepository: Repository<ShoppingCartsItemsEntity>,
+    @InjectRepository(ShoppingLists)
+    private shoppingListRepository: Repository<ShoppingLists>,
+    @InjectRepository(ShoppingListsItemsEntity)
+    private shoppingCartItemsRepository: Repository<ShoppingListsItemsEntity>,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     @InjectRepository(Products)
     private productRepository: Repository<Products>,
-  ) {}
+  ) { }
 
   async getAll(): Promise<any> {
-    const result = await this.shoppingCartRepository
+    const result = await this.shoppingListRepository
       .createQueryBuilder('shoppCart')
       .select([
         'shoppCart.id',
@@ -67,8 +66,8 @@ export class ShoppingCartsService {
     return result;
   }
 
-  async findById(_id: number): Promise<ShoppingCarts[]> {
-    const result = await this.shoppingCartRepository.find({
+  async findById(_id: number): Promise<ShoppingLists[]> {
+    const result = await this.shoppingListRepository.find({
       where: [{ id: _id }],
     });
 
@@ -77,7 +76,7 @@ export class ShoppingCartsService {
     return result;
   }
 
-  async create(shoppingCarts: Partial<ShoppingCartsDTO>) {
+  async create(shoppingCarts: Partial<ShoppingListsDTO>) {
     const user = await this.userRepository.findOne({
       where: { id: shoppingCarts.user_id },
     });
@@ -89,21 +88,21 @@ export class ShoppingCartsService {
       );
     }
 
-    const shoppingCart = this.shoppingCartRepository.create({
+    const shoppingCart = this.shoppingListRepository.create({
       ...shoppingCarts,
       user,
     });
 
-    await this.shoppingCartRepository.save(shoppingCart);
+    await this.shoppingListRepository.save(shoppingCart);
   }
 
-  async addItemToCart(data: ShoppingCartsItemsDTO) {
+  async addItemToCart(data: ShoppingListsItemsDTO) {
     // const user = new this.create(data);
     const product = await this.productRepository.findOne({
       where: { id: data.productId },
     });
 
-    const shoppingCart = await this.shoppingCartRepository.findOne({
+    const shoppingCart = await this.shoppingListRepository.findOne({
       where: { id: data.shoppingCartId },
     });
 
@@ -119,11 +118,11 @@ export class ShoppingCartsService {
     });
   }
 
-  async update(shoppingCarts: Partial<ShoppingCartsDTO>) {
-    await this.shoppingCartRepository.save(shoppingCarts);
+  async update(shoppingCarts: Partial<ShoppingListsDTO>) {
+    await this.shoppingListRepository.save(shoppingCarts);
   }
 
-  async delete(shoppingCarts: ShoppingCarts) {
-    await this.shoppingCartRepository.delete(shoppingCarts);
+  async delete(shoppingCarts: ShoppingLists) {
+    await this.shoppingListRepository.delete(shoppingCarts);
   }
 }

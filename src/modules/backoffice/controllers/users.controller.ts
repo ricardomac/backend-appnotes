@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiResponseResult } from 'src/shared/api-response';
-import { TransformInterceptor } from 'src/shared/transform.interceptor';
 import { UserDTO } from '../dtos/user.dto';
 import { UserEntity } from '../models/user.entity';
 import { UsersService } from '../services/users.service';
@@ -21,7 +20,7 @@ import { UsersService } from '../services/users.service';
 @ApiTags('Users')
 @Controller('api/users')
 export class UsersController {
-  constructor(private service: UsersService) {}
+  constructor(private service: UsersService) { }
 
   @Get()
   getAll() {

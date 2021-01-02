@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { GenericEntity } from './generic.entity';
-import { ShoppingCartsItemsEntity } from './shopping-carts-items.entity';
+import { ShoppingListsItemsEntity } from './shopping-lists-items.entity';
 
 @Entity({
   name: 'products',
@@ -23,6 +23,6 @@ export class Products extends GenericEntity {
   // })
   // user: User;
 
-  @OneToMany(() => ShoppingCartsItemsEntity, (type) => type.product)
+  @OneToMany(() => ShoppingListsItemsEntity, (type) => type.product)
   product: Products;
 }

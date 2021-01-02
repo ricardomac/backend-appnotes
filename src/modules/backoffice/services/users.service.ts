@@ -8,6 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Repository } from 'typeorm';
 import { UserDTO } from '../dtos/user.dto';
+import { ShoppingLists } from '../models/shopping-lists.entity';
 import { UserEntity } from '../models/user.entity';
 
 @Injectable()
@@ -15,7 +16,9 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
-  ) {}
+    @InjectRepository(ShoppingLists)
+    private shoppingCartRepository: Repository<ShoppingLists>
+  ) { }
 
   async getAll(): Promise<UserEntity[]> {
     return await this.usersRepository.find();
@@ -34,20 +37,34 @@ export class UsersService {
   async login(userDTO: Partial<UserDTO>) {
     const user = await this.usersRepository.findOne({
       where: [{ email: userDTO.email, password: userDTO.password }],
+      select: ['id', 'name']
     });
+
     if (!user) {
       throw new HttpException('Usuario não encontrado', HttpStatus.NOT_FOUND);
     }
-    return user;
+
+    const shoppingCarts = await this.shoppingCartRepository.find({
+      where: [{ user }],
+      select: ['id', 'name']
+    })
+
+    console.log(shoppingCarts);
+
+    return { user, shoppingCarts };
   }
 
   async create(userDTO: Partial<UserDTO>) {
+
+
     const user = await this.usersRepository.findOne({
       where: [{ email: userDTO.email }],
     });
+
     if (user) {
       throw new BadRequestException();
     }
+
     return await this.usersRepository.save(userDTO);
   }
 
