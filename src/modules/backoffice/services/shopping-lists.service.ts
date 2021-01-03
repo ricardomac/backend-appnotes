@@ -58,11 +58,11 @@ export class ShoppingListsService {
         'product.name',
         'product.image',
       ])
-      .where(`shoppListItems.shoppListId = ${shoppListId}`)
+      .where(`shoppListItems.shoppingListId = ${shoppListId}`)
       .leftJoin('shoppListItems.product', 'product')
       .getMany();
 
-    if (!result || result.length <= 0) throw new NotFoundException();
+    // if (!result || result.length <= 0) throw new NotFoundException();
     return result;
   }
 

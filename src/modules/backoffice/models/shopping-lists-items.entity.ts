@@ -23,7 +23,9 @@ export class ShoppingListsItemsEntity extends GenericEntity {
   @JoinColumn({ name: 'productId' })
   product: Products;
 
-  @ManyToOne(() => ShoppingLists, (type) => type.shoppingListsItems)
+  @ManyToOne(() => ShoppingLists, (type) => type.shoppingListsItems, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'shoppingListId' })
   shoppingList: ShoppingLists;
 }
