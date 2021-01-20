@@ -8,7 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ShoppingListsDTO } from 'src/modules/backoffice/dtos/shopping-lists.dto';
 import { UserEntity } from 'src/modules/backoffice/models/user.entity';
 import { Repository } from 'typeorm';
+import { CheckOutDTO } from '../dtos/check-out.dto';
+import { ProductDTO } from '../dtos/product.dto';
 import { ShoppingListsItemsDTO } from '../dtos/shopping-lists-items.dto';
+import { CompletedPurchases } from '../models/completed_purchases.entity';
 import { Products } from '../models/products.entity';
 import { ShoppingListsItemsEntity } from '../models/shopping-lists-items.entity';
 import { ShoppingLists } from '../models/shopping-lists.entity';
@@ -18,6 +21,8 @@ export class ShoppingListsService {
   constructor(
     @InjectRepository(ShoppingLists)
     private shoppingListRepository: Repository<ShoppingLists>,
+    @InjectRepository(CompletedPurchases)
+    private completedPurchasesRepository: Repository<CompletedPurchases>,
     @InjectRepository(ShoppingListsItemsEntity)
     private shoppingListsItemsRepository: Repository<ShoppingListsItemsEntity>,
     @InjectRepository(UserEntity)
@@ -94,6 +99,44 @@ export class ShoppingListsService {
     });
 
     await this.shoppingListRepository.save(shoppingList);
+  }
+
+  async checkOut(data: CheckOutDTO) {
+
+    const shoppingList = await this.shoppingListRepository.findOne({
+      where: { id: data.shoppingListId }
+    })
+
+    const products = await this.shoppingListsItemsRepository.find({
+      where: { shoppingList: shoppingList.id },
+      relations: ["product"]
+    })
+
+    const onlyProducts = products.map(x => x.product);
+
+    onlyProducts.forEach(async (product: Products) => {
+
+      var productUpdate = await this.shoppingListsItemsRepository.findOne({
+        where: { product }
+      })
+
+      await this.productRepository.update(product.id, {
+        id: product.id,
+        quantity: product.quantity += productUpdate.quantity,
+      })
+
+      await this.completedPurchasesRepository.save({
+        product,
+        quantity: productUpdate.quantity,
+        shoppingList
+      })
+
+    });
+
+    products.forEach(async (value: ShoppingListsItemsEntity) => {
+      await this.shoppingListsItemsRepository.delete(value.id);
+    })
+
   }
 
   async addItemToList(data: ShoppingListsItemsDTO) {

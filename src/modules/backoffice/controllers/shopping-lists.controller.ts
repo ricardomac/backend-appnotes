@@ -8,6 +8,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CheckOutDTO } from '../dtos/check-out.dto';
 import { ShoppingListsItemsDTO } from '../dtos/shopping-lists-items.dto';
 import { ShoppingListsDTO } from '../dtos/shopping-lists.dto';
 import { ShoppingListsService } from '../services/shopping-lists.service';
@@ -40,6 +41,11 @@ export class ShoppingListsController {
   @Post('add-item')
   async addItemToList(@Body() shoppingListsItemsDTO: ShoppingListsItemsDTO) {
     return await this.service.addItemToList(shoppingListsItemsDTO);
+  }
+
+  @Post('check-out')
+  async checkOut(@Body() checkOutDTO: CheckOutDTO) {
+    return await this.service.checkOut(checkOutDTO);
   }
 
   @Put()
