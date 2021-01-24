@@ -9,16 +9,20 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiResponseResult } from 'src/shared/api-response';
+import { JwtAuthGuard } from 'src/shared/jwt/jwt-auth.guard';
 import { UserDTO } from '../dtos/user.dto';
 import { UserEntity } from '../models/user.entity';
 import { UsersService } from '../services/users.service';
 
+// @UseGuards(JwtAuthGuard)
+@Controller('users')
 @ApiTags('Users')
-@Controller('api/users')
+// @ApiBearerAuth('JWT')
 export class UsersController {
   constructor(private service: UsersService) { }
 
@@ -32,22 +36,22 @@ export class UsersController {
     return this.service.findById(id);
   }
 
-  @Post('auth')
-  @HttpCode(200)
-  // @UseInterceptors(TransformInterceptor)
-  async login(@Body() user: UserDTO) {
-    if (!user.email || !user.password) {
-      throw new HttpException(
-        'Por favor informe o e-mail e senha',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    return new ApiResponseResult(
-      true,
-      'Usuario autenticado',
-      await this.service.login(user),
-    );
-  }
+  // @Post('auth')
+  // @HttpCode(200)
+  // // @UseInterceptors(TransformInterceptor)
+  // async login(@Body() user: UserDTO) {
+  //   if (!user.email || !user.password) {
+  //     throw new HttpException(
+  //       'Por favor informe o e-mail e senha',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  //   return new ApiResponseResult(
+  //     true,
+  //     'Usuario autenticado',
+  //     await this.service.login(user),
+  //   );
+  // }
 
   @Post()
   async create(@Body() user: UserDTO) {

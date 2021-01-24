@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { jwtConstants } from 'src/shared/constants';
 import { HttpErrorFilter } from 'src/shared/http-error.filter';
 import { LoggingInterceptor } from 'src/shared/logging.interceptor';
+import { AuthService } from './services/auth.service';
+import { JwtStrategy } from '../../shared/jwt/jwt.strategy';
+import { LocalStrategy } from '../../shared/jwt/local.strategy';
 import { ProductsController } from './controllers/products.controller';
 import { ShoppingListsItemsController } from './controllers/shopping-lists-items.controller';
 import { ShoppingListsController } from './controllers/shopping-lists.controller';
@@ -17,6 +23,7 @@ import { ProductsService } from './services/products.service';
 import { ShoppingListsItemsService } from './services/shopping-lists-items.service';
 import { ShoppingListsService } from './services/shopping-lists.service';
 import { UsersService } from './services/users.service';
+import { AuthController } from './controllers/auth.controller';
 
 @Module({
   imports: [
@@ -27,8 +34,14 @@ import { UsersService } from './services/users.service';
       ShoppingListsItemsEntity,
       CompletedPurchases
     ]),
+    PassportModule,
+    JwtModule.register({
+        secret: jwtConstants.secret,
+        signOptions: { expiresIn: '10h' },
+    }),
   ],
   controllers: [
+    AuthController,
     UsersController,
     ProductsController,
     ShoppingListsController,
@@ -40,6 +53,9 @@ import { UsersService } from './services/users.service';
     ShoppingListsService,
     ShoppingListsItemsService,
     CompletedPurchasesService,
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
     { provide: APP_FILTER, useClass: HttpErrorFilter },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
   ],

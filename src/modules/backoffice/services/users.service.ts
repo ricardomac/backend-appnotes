@@ -10,9 +10,13 @@ import { Repository } from 'typeorm';
 import { UserDTO } from '../dtos/user.dto';
 import { ShoppingLists } from '../models/shopping-lists.entity';
 import { UserEntity } from '../models/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+
+  private readonly saltRounds = 10;
+
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
@@ -20,8 +24,51 @@ export class UsersService {
     private shoppingListRepository: Repository<ShoppingLists>
   ) { }
 
+
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(this.saltRounds);
+    return await bcrypt.hash(password, salt);
+  }
+
+  async create(createUserDto: UserDTO) {
+
+    const user = await this.usersRepository.findOne({
+      where: [{ email: createUserDto.email }],
+    });
+
+    if (user) {
+      throw new BadRequestException("Não foi possivel registrar o usuário. Verifique as informações.");
+    }
+
+    const hash = await this.hashPassword(createUserDto.password);
+    return await this.usersRepository.save({
+      ...createUserDto,
+      password: hash
+    });
+  }
+
+  // async create(userDTO: Partial<UserDTO>) {
+  
+  //   const user = await this.usersRepository.findOne({
+  //     where: [{ email: userDTO.email }],
+  //   });
+
+  //   if (user) {
+  //     throw new BadRequestException();
+  //   }
+
+  //   return await this.usersRepository.save(userDTO);
+  // }
+
   async getAll(): Promise<UserEntity[]> {
     return await this.usersRepository.find();
+  }
+
+  async findByEmail(email: string): Promise<UserEntity | undefined> {
+    return await this.usersRepository.findOne({
+      where: { email: email }
+    })
   }
 
   async findById(id: number) {
@@ -54,19 +101,6 @@ export class UsersService {
     return { user, shoppingLists };
   }
 
-  async create(userDTO: Partial<UserDTO>) {
-
-
-    const user = await this.usersRepository.findOne({
-      where: [{ email: userDTO.email }],
-    });
-
-    if (user) {
-      throw new BadRequestException();
-    }
-
-    return await this.usersRepository.save(userDTO);
-  }
 
   async update(id: number, data: Partial<UserDTO>) {
     let user = await this.usersRepository.findOne({ where: { id } });
