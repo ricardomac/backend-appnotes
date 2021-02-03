@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Repository } from 'typeorm';
@@ -31,6 +32,14 @@ export class UsersService {
     return await bcrypt.hash(password, salt);
   }
 
+  public async validateCredentials(user: UserEntity, password: string): Promise<boolean> {
+    const valid = await bcrypt.compare(password, user.password)
+    if (!valid) {
+      throw new UnauthorizedException()
+    }
+    return valid;
+  }
+
   async create(createUserDto: UserDTO) {
 
     const user = await this.usersRepository.findOne({
@@ -49,7 +58,7 @@ export class UsersService {
   }
 
   // async create(userDTO: Partial<UserDTO>) {
-  
+
   //   const user = await this.usersRepository.findOne({
   //     where: [{ email: userDTO.email }],
   //   });
@@ -67,38 +76,30 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<UserEntity | undefined> {
     return await this.usersRepository.findOne({
-      where: { email: email }
+      where: { email: email },
     })
   }
 
   async findById(id: number) {
-    const user = await this.usersRepository.findOne({ where: { id } });
-
-    if (!user) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-
-    return user;
+    return await this.usersRepository.findOne({ where: { id } });
   }
 
   async login(userDTO: Partial<UserDTO>) {
-    const user = await this.usersRepository.findOne({
-      where: [{ email: userDTO.email, password: userDTO.password }],
-      select: ['id', 'name']
-    });
-
+    const user = await this.findByEmail(userDTO.email);
     if (!user) {
-      throw new HttpException('Usuario não encontrado', HttpStatus.NOT_FOUND);
+      throw new UnauthorizedException();
     }
+    await this.validateCredentials(user, userDTO.password);
 
     const shoppingLists = await this.shoppingListRepository.find({
       where: [{ user }],
       select: ['id', 'name']
     })
 
-    console.log(shoppingLists);
-
-    return { user, shoppingLists };
+    return {
+      user,
+      shoppingLists
+    };
   }
 
 

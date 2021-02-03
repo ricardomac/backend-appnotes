@@ -24,11 +24,15 @@ import { ShoppingListsItemsService } from './services/shopping-lists-items.servi
 import { ShoppingListsService } from './services/shopping-lists.service';
 import { UsersService } from './services/users.service';
 import { AuthController } from './controllers/auth.controller';
+import { RefreshToken } from './models/refresh-token.entity';
+import { TokensService } from './services/token.service';
+import { RefreshTokensService } from './services/refresh-token.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       UserEntity,
+      RefreshToken,
       Products,
       ShoppingLists,
       ShoppingListsItemsEntity,
@@ -37,7 +41,7 @@ import { AuthController } from './controllers/auth.controller';
     PassportModule,
     JwtModule.register({
         secret: jwtConstants.secret,
-        signOptions: { expiresIn: '10h' },
+        signOptions: { expiresIn: '60s' },
     }),
   ],
   controllers: [
@@ -49,6 +53,8 @@ import { AuthController } from './controllers/auth.controller';
   ],
   providers: [
     UsersService,
+    TokensService,
+    RefreshTokensService,
     ProductsService,
     ShoppingListsService,
     ShoppingListsItemsService,

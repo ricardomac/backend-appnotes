@@ -81,6 +81,16 @@ export class ShoppingListsService {
     return result;
   }
 
+  async findByUser(user_id: number): Promise<ShoppingLists[]> {
+    const result = await this.shoppingListRepository.find({
+      where: [{ user: user_id }],
+    });
+
+    if (!result || result.length <= 0) throw new NotFoundException();
+
+    return result;
+  }
+
   async create(shoppingListsDTO: Partial<ShoppingListsDTO>) {
     const user = await this.userRepository.findOne({
       where: { id: shoppingListsDTO.user_id },
@@ -113,6 +123,8 @@ export class ShoppingListsService {
     })
 
     const onlyProducts = products.map(x => x.product);
+
+    console.log(onlyProducts);
 
     onlyProducts.forEach(async (product: Products) => {
 

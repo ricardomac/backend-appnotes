@@ -19,10 +19,10 @@ import { UserDTO } from '../dtos/user.dto';
 import { UserEntity } from '../models/user.entity';
 import { UsersService } from '../services/users.service';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 @ApiTags('Users')
-// @ApiBearerAuth('JWT')
+@ApiBearerAuth('JWT')
 export class UsersController {
   constructor(private service: UsersService) { }
 

@@ -6,13 +6,17 @@ import {
   Delete,
   Param,
   Body,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { delay } from 'rxjs/operators';
+import { JwtAuthGuard } from 'src/shared/jwt/jwt-auth.guard';
 import { ProductDTO } from '../dtos/product.dto';
 import { Products } from '../models/products.entity';
 import { ProductsService } from '../services/products.service';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT')
 @ApiTags('Products')
 @Controller('api/products')
 export class ProductsController {
@@ -26,6 +30,11 @@ export class ProductsController {
   @Get(':id')
   get(@Param() params) {
     return this.service.findById(params.id);
+  }
+
+  @Get('user/:id')
+  getFindByUser(@Param() params) {
+    return this.service.findByUser(params.id);
   }
 
   @Post()
